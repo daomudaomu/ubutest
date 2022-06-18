@@ -4,7 +4,7 @@ from lxml import etree
 import jsonpath
 import pandas as pd
 import pyecharts
-
+print(23)
 F_url='https://api.inews.qq.com/newsqa/v1/query/inner/publish/modules/list?modules=statisGradeCityDetail,diseaseh5Shelf'
 data={
 'modules': 'statisGradeCityDetail,diseaseh5Shelf'
