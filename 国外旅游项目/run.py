@@ -17,7 +17,7 @@ def get_firsturl(url):
 
     xname = tree.xpath('//div[@class="OhCyu"]//a/text()')
     xadress = tree.xpath('//div[@class="bhDlF bPJHV eQXRG"]/span[1]/span/text()')
-    rates = tree.xpath('//span[@class="bFlvo"]/*[name()="svg"]/@aria-label')
+    # rates = tree.xpath('//span[@class="bFlvo"]/*[name()="svg"]/@aria-label')
     urls = tree.xpath('//div[@class="OhCyu"]/span/a/@href')
     # 在列表urls中每个元素前加上https://www.tripadvisor.com，形成新的列表
     new_urls = []
@@ -36,11 +36,11 @@ def get_firsturl(url):
         data = []
         name=xname_new[i]
         address=xadress[i]
-        rate=rates[i]
+        # rate=rates[i]
         url=new_urls[i]
         data.append(name)
         data.append(address)
-        data.append(rate)
+        # data.append(rate)
         data.append(url)
         datalist.append(data)
     return datalist
@@ -56,48 +56,42 @@ def get_son_url(url,i):
 
     infor_adress = tree.xpath('//div[@class="cSPba bKBJS Me"]/span[2]/a/span/text()')
     tels = tree.xpath('//div[@class="bKBJS Me"]/a/span/span[2]/text()')
+    rates=tree.xpath('//span[@class="dyeJW"]/a/*[name()="svg"]/@aria-label')
 
     for j in range(len(infor_adress)):
         infaddress=infor_adress[j]
         tel=tels[j]
+        rate=rates[j]
 
     datalist[i].append(infaddress)
     datalist[i].append(tel)
+    datalist[i].append(rate)
+    return datalist
 
 def save_mysql(datalist):
-    init_db()  # 创建表
+
     conn = pymysql.connect(
         host='127.0.0.1',
         user='root',
         password='root',
         port=3306,
         charset='utf8',
-        db='bosstest'
+        db='tourweb'
     )
     # 创建游标
     cursor = conn.cursor()
     i = 0
     for ex in datalist:
         i = i + 1
-        # 工作名称
         name = ex[0]
-        # 工作地点
-        area = ex[1]
-        # 公司名称
-        company_name = ex[2]
-        # 公司类型
-        company_type = ex[3]
-        # 薪资待遇
-        money = ex[4]
-        # 经验学历
-        exp = ex[5]
-        # 标签
-        tags = ex[6]
-        # 福利待遇
-        boon = ex[7]
+        address = ex[1]
+        web = ex[2]
+        infor_address = ex[3]
+        tel = ex[4]
+        rate = ex[5]
+
         try:
-            sql = 'insert into `%s`(name,area,company_name,company_type,money,exp,tags,boon)values("{}","{}","{}","{}","{}","{}","{}","{}")'.format(
-                name, area, company_name, company_type, money, exp, tags, boon) % (KeyWord)
+            sql = 'insert into tour(name,address,web,inf_address,tel,rate)values("{}","{}","{}","{}","{}","{}")'.format(name,address,web,infor_address,tel,rate)
             cursor.execute(sql)
             conn.commit()
             print(f"正在保存第{i}条数据")
@@ -117,13 +111,12 @@ if __name__ == '__main__':
         get_firsturl(url)
         for i in range(len(datalist)):
             print(i)
-            get_son_url(datalist[i][3], i)
+            get_son_url(datalist[i][2], i)
         print(datalist)
-        save_mysql()
+        save_mysql(datalist)
         datalist.clear()
         print(datalist)
-        if k==3:
-            break
+
 
 
 
